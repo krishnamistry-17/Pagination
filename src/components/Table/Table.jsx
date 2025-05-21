@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Page from "./Pagination/Page";
+import Page from "../Pagination/Page";
 import { MdDownloadDone } from "react-icons/md";
 import { FaSearch } from "react-icons/fa";
 import CsvDownloader from "react-csv-downloader";
