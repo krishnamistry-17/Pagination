@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Page from "./Pagination/Page";
-import { IoMdDownload } from "react-icons/io";
 import { MdDownloadDone } from "react-icons/md";
 import { FaSearch } from "react-icons/fa";
+import CsvDownloader from "react-csv-downloader";
 
 const Table = () => {
   const [posts, setPost] = useState([]);
   const [error, setError] = useState(true);
   const [isLoading, setIsLoading] = useState(null);
   const [input, setInput] = useState("");
-  const [suggestion, setSuggestion] = useState();
-  console.log("suggestion :", suggestion);
-  const [isdownloadComplete, setDownloadComplete] = useState();
+  const [isdownloadComplete] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
 
@@ -51,28 +49,25 @@ const Table = () => {
     return <div>Loading</div>;
   }
 
-  const serachTitle = currentPosts.filter((item) =>
+  const searchResult = currentPosts.filter((item) =>
     item.title.toLowerCase().includes(input.toLocaleLowerCase())
   );
-
-  const handleDownload = (complete) => {
-    setDownloadComplete(!isdownloadComplete);
-  };
+  console.log("searchResult :", searchResult);
 
   return (
     <>
       <div>
-        <div className=" container mx-auto sm:p-[16px] xs:p-[5px]">
-          <div className="flex justify-center items-center">
-            <div className="flex justify-between items-center">
+        <div className=" container mx-auto sm:p-[16px] xs:p-[4px]">
+          <div className="flex justify-center items-center mb-[16px] mt-[10px]">
+            <div className="flex justify-between items-center w-full max-w-md">
               <input
                 type="text"
                 onChange={(e) => setInput(e.target.value)}
                 value={input}
                 placeholder="Search Title"
-                className="border-black-dark border p-[5px] mb-[10px] rounded-md"
+                className="border-black-dark border p-[5px] mb-[10px] rounded-md w-full"
               />
-              <FaSearch className="ml-[-25px] mt-[-8px]" />
+              <FaSearch className="ml-[-25px] mt-[-8px] mr-[15px]" />
             </div>
           </div>
           <table className="table-auto w-full border-collapse border-[2px] border-black-darkest">
@@ -88,25 +83,35 @@ const Table = () => {
                   <div className="flex justify-between items-center">
                     Body
                     <span>
-                      <IoMdDownload
-                        className={`mt-[5px] justify-end items-end  w-[35px] h-[35px]
-                          ${
-                            isdownloadComplete === "complete" ? (
-                              <MdDownloadDone />
-                            ) : (
-                              <IoMdDownload />
-                            )
-                          }
-                          `}
-                        onClick={handleDownload}
-                      />
+                      {isdownloadComplete ? (
+                        <>
+                          <MdDownloadDone
+                            className="w-[35px] h-[35px] cursor-pointer"
+                            title="Downloaded"
+                          />
+                        </>
+                      ) : (
+                        <button
+                          className="bg-yellow-600 
+                        sm:w-[120px] h-[45px] 
+                        xs:w-[50px] sm:ml-[0px] xs:ml-[5px]
+                        sm:text-[15px] xs:text-[8px] p-[5px] rounded-md text-white-light"
+                        >
+                          <CsvDownloader
+                            datas={searchResult}
+                            text="Download CSV"
+                            filename={`postData_` + new Date().toLocaleString()}
+                            extension=".csv"
+                          />
+                        </button>
+                      )}
                     </span>
                   </div>
                 </th>
               </tr>
             </thead>
             <tbody>
-              {serachTitle?.map((user) => (
+              {searchResult?.map((user) => (
                 <tr key={user.id} className="border-black-darkest border-b">
                   <td className="px-[16px] border-r border-black-darkest py-[8px] text-[15px]">
                     {user.id}
@@ -122,6 +127,7 @@ const Table = () => {
             </tbody>
           </table>
         </div>
+
         <div>
           <Page
             postsPerPage={postsPerPage}
@@ -137,11 +143,3 @@ const Table = () => {
 };
 
 export default Table;
-
-{/*echo "# Pagination" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/krishnamistry-17/Pagination.git
-git push -u origin main */}

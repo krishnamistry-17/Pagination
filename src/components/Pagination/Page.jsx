@@ -1,25 +1,36 @@
 import { MdArrowBackIos } from "react-icons/md";
 import { MdArrowForwardIos } from "react-icons/md";
 
-const Page = ({ postsPerPage, totalPosts, setCurrentPage, currentPage }) => {
-  const totalPages = Math.ceil(totalPosts / postsPerPage);
+const Page = ({ totalPages = 10, currentPage, setCurrentPage }) => {
+  const getPaginationRange = () => {
+    //take a range
+    const range = [];
+    //push 1 in range
+    range.push(1);
+    //addd ... after range
+    if (currentPage > 3) {
+      range.push("...");
+    }
+    //give start & end point
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
 
-  // Dynamically add page numbers
-  let pageNumbers = [];
+    //push i range wise
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
 
-  // Add the first two pages
-  pageNumbers.push(1, 2);
-  pageNumbers.push(3);
-  pageNumbers.push(4, 5);
-  pageNumbers.push(6, 7);
-  pageNumbers.push(8);
+    if (currentPage < totalPages - 2) {
+      range.push("...");
+    }
+    //push total pages
+    range.push(totalPages);
 
-  // Add second-to-last and last pages
-  if (totalPages > 1) {
-    pageNumbers.push(totalPages - 1, totalPages);
-  }
+    return range;
+  };
 
-  // Handle page change
+  const paginationRange = getPaginationRange();
+
   const paginate = (pageNumber, e) => {
     e.preventDefault();
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -56,9 +67,9 @@ const Page = ({ postsPerPage, totalPosts, setCurrentPage, currentPage }) => {
       {/* Previous Button */}
       <button
         className="flex items-center justify-center 
-          md:w-[108px] md:h-[40px] sm:text-[20px] xs:text-[18px]
+          md:w-[108px] md:h-[40px] sm:text-[20px] xs:text-[16px]
           sm:w-[120px] sm:h-[40px]
-          xs:w-[120px] xs:h-[40px]
+          xs:w-[94px] xs:h-[40px]
           md:rounded-l-lg sm:rounded-l-lg 
           transition-all
           bg-cream-bglight text-black-darkest"
@@ -69,37 +80,56 @@ const Page = ({ postsPerPage, totalPosts, setCurrentPage, currentPage }) => {
       </button>
 
       <div className="md:flex sm:gap-4 xs:gap-2">
-        {pageNumbers.map((number, index) => (
-          <button
-            key={number}
-            className={`
-                md:w-[60px] md:h-[40px] 
-                sm:w-[50px] sm:h-[30px] 
-                xs:w-[40px] xs:h-[30px]
-                md:px-[16px] md:py-[8px]
-                sm:px-[10px] sm:py-[4px]
-                md:text-lg sm:text-sm 
-                md:rounded-lg sm:rounded-lg 
-                transition-all font-semibold 
-                ${
-                  currentPage === number
-                    ? "bg-yellow-600 text-white"
-                    : "bg-cream-bglight text-black-darkest border border-gray-300 hover:bg-yellow-700"
-                }
-              `}
-            onClick={(e) => paginate(number, e)}
-          >
-            {number}
-          </button>
-        ))}
+        {paginationRange.map((number, index) =>
+          typeof number === "number" ? (
+            <button
+              key={index}
+              className={`
+        md:w-[60px] md:h-[40px] 
+        sm:w-[50px] sm:h-[30px] 
+        xs:w-[40px] xs:h-[30px]
+        md:px-[16px] md:py-[8px]
+        sm:px-[10px] sm:py-[4px]
+        xs:px-[15px]
+        md:text-lg sm:text-sm 
+        md:rounded-lg sm:rounded-lg xs:rounded-md
+        transition-all font-semibold 
+        ${
+          currentPage === number
+            ? "bg-yellow-600 text-white sm:ml-[0px] xs:ml-[5px]"
+            : "bg-cream-bglight text-black-darkest border border-gray-300 hover:bg-yellow-700 sm:ml-[0px] xs:ml-[5px]"
+        }
+      `}
+              onClick={(e) => paginate(number, e)}
+            >
+              {number}
+            </button>
+          ) : (
+            <span
+              key={index}
+              className={`
+        flex items-center justify-center 
+        md:w-[60px] md:h-[40px] 
+        sm:w-[50px] sm:h-[30px] 
+        xs:w-[40px] xs:h-[30px]
+        md:px-[16px] md:py-[8px]
+        sm:px-[10px] sm:py-[4px]
+        md:text-lg sm:text-sm 
+        text-gray-400 font-semibold
+      `}
+            >
+              ...
+            </span>
+          )
+        )}
       </div>
 
       {/* Next Button */}
       <button
         className="flex items-center justify-center 
-         md:w-[108px] md:h-[40px] sm:text-[20px] xs:text-[18px]
+         md:w-[108px] md:h-[40px] sm:text-[20px] xs:text-[16px]
           sm:w-[120px] sm:h-[40px]
-          xs:w-[120px] xs:h-[40px] bg-cream-bglight text-black-darkest 
+          xs:w-[94px] xs:h-[40px] bg-cream-bglight text-black-darkest 
           md:rounded-r-lg  
           transition-all"
         onClick={goToNextPage}
